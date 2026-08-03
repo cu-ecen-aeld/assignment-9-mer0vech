@@ -20,7 +20,7 @@ inherit update-rc.d
 
 INITSCRIPT_PACKAGES = "${PN}"
 INITSCRIPT_NAME:${PN} = "scull-init"
-INITSCRIPT_PARAMS:${PN} = "start 98 S . stop 10 0 1 6 ."
+INITSCRIPT_PARAMS:${PN} = "start 97 S . stop 10 0 1 6 ."
 
 do_install () {
     install -d ${D}${sysconfdir}/init.d

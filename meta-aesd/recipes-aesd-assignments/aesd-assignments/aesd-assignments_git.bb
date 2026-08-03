@@ -3,29 +3,21 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 inherit update-rc.d
-# Set this  with the path to your assignments rep.  Use ssh protocol and see lecture notes
-# about how to setup ssh-agent for passwordless access
+
 SRC_URI = "git://git@github.com/cu-ecen-aeld/assignments-3-and-later-mer0vech.git;protocol=ssh;branch=main"
 
 PV = "1.0+git${SRCPV}"
-# set to reference a specific commit hash in your assignment repo
-SRCREV = "0518b5fd23808e65b9ccc93833c2de4a09a5f093"
+# SRCREV = "0518b5fd23808e65b9ccc93833c2de4a09a5f093"
+SRCREV = "2c209fbd239d30fb85125755404171e5e61a74c3"
 
-# This sets your staging directory based on WORKDIR, where WORKDIR is defined at 
-# https://docs.yoctoproject.org/ref-manual/variables.html?highlight=workdir#term-WORKDIR
-# We reference the "server" directory here to build from the "server" directory
-# in your assignments repo
 S = "${WORKDIR}/git/server"
-
-# Add the aesdsocket application and any other files you need to install
-# See https://git.yoctoproject.org/poky/plain/meta/conf/bitbake.conf?h=kirkstone
 
 INITSCRIPT_PACKAGES = "${PN}"
 INITSCRIPT_NAME:${PN} = "ss-aesdsocket.sh"
+INITSCRIPT_PARAMS:${PN} = "start 99 S . stop 20 0 1 6 ."
 FILES:${PN} += "${bindir}/aesdsocket ${sysconfdir}/init.d/ss-aesdsocket.sh"
-# customize these as necessary for any libraries you need for your application
-# (and remove comment)
-TARGET_CFLAGS += "-Wall -Wextra -pthread"
+
+TARGET_CFLAGS += "-Wall -Wextra -pthread -DUSE_AESD_CHAR_DEVICE"
 TARGET_LDFLAGS += "-pthread -lrt"
 EXTRA_OEMAKE = "'CC=${CC}' 'CFLAGS=${TARGET_CFLAGS}' 'LDFLAGS=${TARGET_LDFLAGS}' 'TARGET=aesdsocket'"
 
@@ -38,13 +30,6 @@ do_compile () {
 }
 
 do_install () {
-	# Install your binaries/scripts here.
-	# Be sure to install the target directory with install -d first
-	# Yocto variables ${D} and ${S} are useful here, which you can read about at 
-	# https://docs.yoctoproject.org/ref-manual/variables.html?highlight=workdir#term-D
-	# and
-	# https://docs.yoctoproject.org/ref-manual/variables.html?highlight=workdir#term-S
-	# See example at https://github.com/cu-ecen-aeld/ecen5013-yocto/blob/ecen5013-hello-world/meta-ecen5013/recipes-ecen5013/ecen5013-hello-world/ecen5013-hello-world_git.bb
   install -d ${D}${bindir}
   install -d ${D}${sysconfdir}/init.d
 
